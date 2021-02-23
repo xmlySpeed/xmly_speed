@@ -25,7 +25,7 @@ BARK = ''                   # bark服务,自行搜索; secrets可填;形如jfjqx
 SCKEY = ''                  # Server酱的SCKEY; secrets可填
 TG_BOT_TOKEN = ''           # telegram bot token 自行申请
 TG_USER_ID = ''             # telegram 用户ID
-
+QYWX_KEY = ''               # 微信机器人
 ###################################################
 # 对应方案1:  GitHub action自动运行,此处无需填写;
 if "XMLY_SPEED_COOKIE" in os.environ:
@@ -50,7 +50,9 @@ if "XMLY_SPEED_COOKIE" in os.environ:
         TG_BOT_TOKEN = os.environ["TG_BOT_TOKEN"]
         TG_USER_ID = os.environ["TG_USER_ID"]
         print("Telegram 推送打开")
-
+    if "QYWX_KEY" in os.environ and os.environ["QYWX_KEY"]:
+        QYWX_KEY = os.environ["QYWX_KEY"]
+        print("企业微信机器人 推送打开")
 
 ###################################################
 # 可选项
@@ -1038,6 +1040,51 @@ def telegram_bot(title, content):
     print(response.text)
 
 
+
+
+
+def wechat_bot(title, content):
+    print("\n")
+    qywx_key = QYWX_KEY
+    if "QYWX_KEY" in os.environ:
+        qywx_key = os.environ["QYWX_KEY"]
+    if not qywx_key:
+        print("企业微信机器人 推送的QYWX_KEY未设置!!\n取消推送")
+        return
+    print("企业微信机器人 推送开始")
+    webhook_data = {
+        "msgtype": "text",
+        "text": {
+            ""
+            "content": content
+        }
+    }
+
+    # 企业微信机器人发送
+    weheat_bot_push(qywx_key, webhook_data)
+
+
+def robot(qywx_key, webhook_data):
+    # 企业微信机器人的 webhook
+    # 开发文档 https://work.weixin.qq.com/api/doc#90000/90136/91770
+    webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={qywx_key}"
+    headers = {'content-type': 'application/json'}  # 请求头
+    r = requests.post(webhook, headers=headers, data=json.dumps(webhook_data))
+    r.encoding = 'utf-8'
+    # print(f'执行内容:{data}, 参数:{r.text}')
+    # print(f'webhook 发送结果:{r.text}')
+    return r.text
+
+
+def weheat_bot_push(qywx_key, webhook_data):
+    try:
+        res = robot(qywx_key, webhook_data)
+        # print(res)  # 打印请求结果
+        print(f'webhook 发出完毕: {res}')
+        return res
+    except Exception as e:
+        print(e)
+
 def run():
     print(f"喜马拉雅极速版 (https://github.com/Zero-S1/xmly_speed/blob/master/xmly_speed.md ) ,欢迎打赏¯\(°_o)/¯")
     mins, date_stamp, _datatime, _notify_time = get_time()
@@ -1084,6 +1131,7 @@ def run():
         bark("⏰ 喜马拉雅极速版", message)
         serverJ("⏰ 喜马拉雅极速版", message)
         telegram_bot("⏰ 喜马拉雅极速版", message)
+        wechat_bot("⏰ 喜马拉雅极速版", message)
 
 
 if __name__ == "__main__":
