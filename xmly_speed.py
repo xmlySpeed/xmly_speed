@@ -25,7 +25,7 @@ BARK = ''                   # bark服务,自行搜索; secrets可填;形如jfjqx
 SCKEY = ''                  # Server酱的SCKEY; secrets可填
 TG_BOT_TOKEN = ''           # telegram bot token 自行申请
 TG_USER_ID = ''             # telegram 用户ID
-QYWX_KEY = ''               # 微信机器人
+QYWX_KEY = 'f82d1d23-7689-47b2-9cea-c56efa13a598'               # 微信机器人
 ###################################################
 # 对应方案1:  GitHub action自动运行,此处无需填写;
 if "XMLY_SPEED_COOKIE" in os.environ:
@@ -1046,6 +1046,7 @@ def telegram_bot(title, content):
 def wechat_bot(title, content):
     print("\n")
     qywx_key = QYWX_KEY
+
     if "QYWX_KEY" in os.environ:
         qywx_key = os.environ["QYWX_KEY"]
     if not qywx_key:
@@ -1067,7 +1068,7 @@ def wechat_bot(title, content):
 def robot(qywx_key, webhook_data):
     # 企业微信机器人的 webhook
     # 开发文档 https://work.weixin.qq.com/api/doc#90000/90136/91770
-    webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={qywx_key}"
+    webhook = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f82d1d23-7689-47b2-9cea-c56efa13a598"
     headers = {'content-type': 'application/json'}  # 请求头
     r = requests.post(webhook, headers=headers, data=json.dumps(webhook_data))
     r.encoding = 'utf-8'
